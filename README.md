@@ -1,15 +1,8 @@
 # Todo App
 
-A beautiful, robust todo application built with React, Express, MySQL, and Tailwind CSS. Features user authentication with JWT, a modern UI with gradient backgrounds, smooth animations, and a complete set of todo management features.
+A beautiful, robust todo application built with React, Express, MySQL, and Tailwind CSS. Features a modern UI with gradient backgrounds, smooth animations, and a complete set of todo management features.
 
 ## Features
-
-### Authentication
-- 🔐 User sign up and login with JWT tokens
-- 🔒 Protected routes and API endpoints
-- 👤 User-specific todos (each user has their own todos stored in MySQL)
-- 🚪 Secure logout
-- 🔑 Password hashing with bcrypt
 
 ### Todo Management
 - ✅ Add new todos
@@ -22,14 +15,13 @@ A beautiful, robust todo application built with React, Express, MySQL, and Tailw
 - ✅ Persistent storage in MySQL database
 - ✅ Beautiful, responsive UI with Tailwind CSS
 - ✅ Smooth animations and transitions
+- ✅ Local storage support (frontend uses localStorage)
 
 ## Architecture
 
 - **Frontend**: React 18 + Vite + Tailwind CSS
-- **Backend**: Express.js + Node.js
-- **Database**: MySQL
-- **Authentication**: JWT (JSON Web Tokens)
-- **Password Hashing**: bcryptjs
+- **Backend**: Express.js + Node.js (optional - frontend works standalone with localStorage)
+- **Database**: MySQL (optional - for backend API)
 
 ## Getting Started
 
@@ -37,9 +29,9 @@ A beautiful, robust todo application built with React, Express, MySQL, and Tailw
 
 - Node.js (v16 or higher)
 - npm or yarn
-- MySQL (5.7+ or 8.0+)
+- MySQL (5.7+ or 8.0+) - Only if using backend API
 
-### Database Setup
+### Database Setup (Optional - for backend API)
 
 1. **Install MySQL** (if not already installed):
    - macOS: `brew install mysql && brew services start mysql`
@@ -62,7 +54,7 @@ A beautiful, robust todo application built with React, Express, MySQL, and Tailw
    npm install
    ```
 
-2. **Install backend dependencies**:
+2. **Install backend dependencies** (optional - only if using backend API):
    ```bash
    npm run server:install
    ```
@@ -71,7 +63,7 @@ A beautiful, robust todo application built with React, Express, MySQL, and Tailw
    cd server && npm install
    ```
 
-3. **Configure backend environment**:
+3. **Configure backend environment** (optional - only if using backend API):
    ```bash
    cd server
    cp .env.example .env
@@ -84,15 +76,19 @@ A beautiful, robust todo application built with React, Express, MySQL, and Tailw
    DB_USER=root
    DB_PASSWORD=your-mysql-password
    DB_NAME=todoapp
-   JWT_SECRET=your-super-secret-jwt-key
    FRONTEND_URL=http://localhost:5173
    ```
 
 ### Running the Application
 
-You need to run both the backend and frontend servers.
+**Frontend Development Server** (works standalone with localStorage):
+```bash
+npm run dev
+```
 
-**Terminal 1 - Backend Server**:
+The frontend will run on `http://localhost:5173` and use localStorage for todo storage.
+
+**Backend Server** (optional - only if using backend API):
 ```bash
 npm run server
 ```
@@ -103,13 +99,6 @@ cd server && npm run dev
 
 The backend will run on `http://localhost:5000`
 
-**Terminal 2 - Frontend Development Server**:
-```bash
-npm run dev
-```
-
-The frontend will run on `http://localhost:5173`
-
 ### Build for Production
 
 **Frontend**:
@@ -117,17 +106,12 @@ The frontend will run on `http://localhost:5173`
 npm run build
 ```
 
-**Backend**:
+**Backend** (optional):
 ```bash
 cd server && npm start
 ```
 
 ## Usage
-
-### Authentication
-- **Sign Up**: Click "Sign up" on the login page to create a new account
-- **Login**: Enter your email and password to sign in
-- **Logout**: Click the "Logout" button in the top right corner
 
 ### Todo Management
 - **Add a todo**: Type in the input field and click "Add" or press Enter
@@ -138,36 +122,24 @@ cd server && npm start
 - **Toggle all**: Click the checkmark icon in the input area to toggle all todos
 - **Clear completed**: Click "Clear Completed" to remove all completed todos
 
-**Note**: Todos are stored per user in the MySQL database. Each user only sees their own todos.
+**Note**: The frontend uses localStorage by default. Todos are stored in your browser's local storage and persist across page refreshes.
 
 ## Project Structure
 
 ```
 todoApp-cursor/
-├── server/                 # Backend Express server
+├── server/                 # Backend Express server (optional)
 │   ├── config/
 │   │   └── database.js    # MySQL connection pool
-│   ├── middleware/
-│   │   └── auth.js        # JWT authentication middleware
 │   ├── routes/
-│   │   ├── auth.js        # Authentication routes (signup, login)
 │   │   └── todos.js       # Todo CRUD routes
 │   ├── database.sql       # Database schema
 │   ├── server.js          # Express server entry point
-│   └── .env.example       # Environment variables template
+│   └── package.json       # Backend dependencies
 ├── src/
 │   ├── components/
-│   │   ├── Login.jsx      # Login component
-│   │   ├── Signup.jsx     # Signup component
-│   │   ├── TodoApp.jsx    # Main todo app component
-│   │   └── ProtectedRoute.jsx  # Route protection wrapper
-│   ├── contexts/
-│   │   └── AuthContext.jsx  # Authentication context
-│   ├── services/
-│   │   ├── api.js         # Axios instance configuration
-│   │   ├── authService.js # Authentication API calls
-│   │   └── todoService.js # Todo API calls
-│   ├── App.jsx            # Main app with routing
+│   │   └── TodoApp.jsx    # Main todo app component
+│   ├── App.jsx            # Main app component
 │   ├── main.jsx           # React entry point
 │   └── index.css          # Tailwind CSS imports
 ├── index.html             # HTML template
@@ -176,14 +148,10 @@ todoApp-cursor/
 └── README.md              # This file
 ```
 
-## API Endpoints
+## API Endpoints (Optional - Backend API)
 
-### Authentication
-- `POST /api/auth/signup` - Register new user
-- `POST /api/auth/login` - Login user
-
-### Todos (Protected - requires JWT token)
-- `GET /api/todos` - Get all todos for authenticated user
+### Todos
+- `GET /api/todos` - Get all todos
 - `POST /api/todos` - Create a new todo
 - `PUT /api/todos/:id` - Update a todo
 - `DELETE /api/todos/:id` - Delete a todo
@@ -194,34 +162,19 @@ todoApp-cursor/
 - **React 18** - UI library
 - **Vite** - Build tool and dev server
 - **Tailwind CSS** - Utility-first CSS framework
-- **Express.js** - Backend web framework
-- **MySQL** - Relational database
-- **JWT** - Authentication tokens
-- **bcryptjs** - Password hashing
-- **Axios** - HTTP client
-- **React Router** - Client-side routing
+- **Express.js** - Backend web framework (optional)
+- **MySQL** - Relational database (optional)
+- **localStorage** - Browser storage for todos (default)
 
 ## Environment Variables
 
-### Backend (`server/.env`)
+### Backend (`server/.env`) - Optional
 - `PORT` - Server port (default: 5000)
 - `DB_HOST` - MySQL host (default: localhost)
 - `DB_USER` - MySQL username
 - `DB_PASSWORD` - MySQL password
 - `DB_NAME` - Database name (default: todoapp)
-- `JWT_SECRET` - Secret key for JWT tokens
 - `FRONTEND_URL` - Frontend URL for CORS
-
-### Frontend (optional)
-- `VITE_API_URL` - Backend API URL (default: /api, uses proxy)
-
-## Security Features
-
-- Passwords are hashed using bcrypt
-- JWT tokens for stateless authentication
-- Protected API routes with authentication middleware
-- CORS configured for frontend domain
-- SQL injection prevention with parameterized queries
 
 ## License
 
