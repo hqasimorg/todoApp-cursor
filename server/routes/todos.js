@@ -1,18 +1,13 @@
 import express from 'express'
 import pool from '../config/database.js'
-import { authenticateToken } from '../middleware/auth.js'
 
 const router = express.Router()
 
-// All routes require authentication
-router.use(authenticateToken)
-
-// Get all todos for the authenticated user
+// Get all todos
 router.get('/', async (req, res) => {
   try {
     const [todos] = await pool.execute(
-      'SELECT id, text, completed, created_at, updated_at FROM todos WHERE user_id = ? ORDER BY created_at DESC',
-      [req.user.userId]
+      'SELECT id, text, completed, created_at, updated_at FROM todos ORDER BY created_at DESC'
     )
 
     res.json(todos)
@@ -32,8 +27,8 @@ router.post('/', async (req, res) => {
     }
 
     const [result] = await pool.execute(
-      'INSERT INTO todos (user_id, text, completed) VALUES (?, ?, ?)',
-      [req.user.userId, text.trim(), false]
+      'INSERT INTO todos (text, completed) VALUES (?, ?)',
+      [text.trim(), false]
     )
 
     const [todos] = await pool.execute(
@@ -54,10 +49,10 @@ router.put('/:id', async (req, res) => {
     const { id } = req.params
     const { text, completed } = req.body
 
-    // Verify todo belongs to user
+    // Verify todo exists
     const [existingTodos] = await pool.execute(
-      'SELECT id FROM todos WHERE id = ? AND user_id = ?',
-      [id, req.user.userId]
+      'SELECT id FROM todos WHERE id = ?',
+      [id]
     )
 
     if (existingTodos.length === 0) {
@@ -84,10 +79,10 @@ router.put('/:id', async (req, res) => {
       return res.status(400).json({ error: 'No fields to update' })
     }
 
-    values.push(id, req.user.userId)
+    values.push(id)
 
     await pool.execute(
-      `UPDATE todos SET ${updates.join(', ')} WHERE id = ? AND user_id = ?`,
+      `UPDATE todos SET ${updates.join(', ')} WHERE id = ?`,
       values
     )
 
@@ -108,10 +103,10 @@ router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params
 
-    // Verify todo belongs to user
+    // Delete todo
     const [result] = await pool.execute(
-      'DELETE FROM todos WHERE id = ? AND user_id = ?',
-      [id, req.user.userId]
+      'DELETE FROM todos WHERE id = ?',
+      [id]
     )
 
     if (result.affectedRows === 0) {
@@ -129,8 +124,8 @@ router.delete('/:id', async (req, res) => {
 router.delete('/completed/all', async (req, res) => {
   try {
     const [result] = await pool.execute(
-      'DELETE FROM todos WHERE user_id = ? AND completed = ?',
-      [req.user.userId, true]
+      'DELETE FROM todos WHERE completed = ?',
+      [true]
     )
 
     res.json({ message: `${result.affectedRows} completed todos deleted` })
